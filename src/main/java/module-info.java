@@ -3,5 +3,11 @@ module ru.gb {
     requires javafx.fxml;
 
     opens ru.gb to javafx.fxml;
-    exports ru.gb;
+
+    requires java.compiler;
+    requires java.instrument;
+    requires jdk.unsupported;
+    requires static lombok;
+
+
 }

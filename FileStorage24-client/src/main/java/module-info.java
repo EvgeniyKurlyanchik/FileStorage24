@@ -1,10 +1,10 @@
-module ru.gb {
+module ru.gb.client {
+    requires static lombok;
     requires javafx.controls;
     requires javafx.fxml;
     requires io.netty.all;
     requires io.netty.codec;
-    requires lombok;
-    requires FileStorage24.commons;
-    opens ru.gb to javafx.fxml;
+    requires ru.gb.commands;
+    opens ru.gb.client to javafx.fxml;
     exports ru.gb.client;
 }

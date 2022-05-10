@@ -96,7 +96,7 @@ public class ExchangeController implements Initializable {
     int bufferSize = 1024000;
 
     private String ipAddress = "localhost";
-    int port = 8189;
+    int port = 45002;
 
     //Обмен командами
     ObjectEncoderOutputStream os;
@@ -165,27 +165,21 @@ public class ExchangeController implements Initializable {
             }
         });
 
-        clientFileTree.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                    leftContextMenu.show(clientFileTree, Side.BOTTOM, mouseEvent.getY(), mouseEvent.getX());
-                }
-                if (mouseEvent.getButton() == MouseButton.PRIMARY &&
-                        clientFileTree.getSelectionModel().getSelectedItem() != null) {
-                    clientFileTreeFocus = clientFileTree.getSelectionModel().getSelectedItem();
-                }
+        clientFileTree.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                leftContextMenu.show(clientFileTree, Side.BOTTOM, mouseEvent.getY(), mouseEvent.getX());
+            }
+            if (mouseEvent.getButton() == MouseButton.PRIMARY &&
+                    clientFileTree.getSelectionModel().getSelectedItem() != null) {
+                clientFileTreeFocus = clientFileTree.getSelectionModel().getSelectedItem();
             }
         });
 
-        serverFileTree.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                if (serverFileTree.getSelectionModel().getSelectedItem() == null) {
-                    return;
-                }
-                refreshServFocused();
+        serverFileTree.setOnMouseClicked(mouseEvent -> {
+            if (serverFileTree.getSelectionModel().getSelectedItem() == null) {
+                return;
             }
+            refreshServFocused();
         });
     }
 
@@ -395,12 +389,7 @@ public class ExchangeController implements Initializable {
                         switch (command.getType()) {
                             case USER_INFO:
                                 UserInfo userInfo = (UserInfo) command;
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        authLabel.setText(userInfo.getInfo());
-                                    }
-                                });
+                                Platform.runLater(() -> authLabel.setText(userInfo.getInfo()));
                                 break;
                             case LIST_MESSAGE:
                                 ListResponse response = (ListResponse) command;
