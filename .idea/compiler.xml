@@ -8,8 +8,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="FileStorage24" />
-        <module name="FileStorage24-server" />
-        <module name="FileStorage24-commons" />
+        <module name="server" />
+        <module name="commons" />
         <module name="FileStorage24-client" />
       </profile>
     </annotationProcessing>
