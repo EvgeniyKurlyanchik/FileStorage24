@@ -12,7 +12,7 @@ import ru.gb.commands.*;
 
 @Slf4j
 public class MessageHandler extends SimpleChannelInboundHandler<AbstractCommand> {
-    private final String rootDir = "O:\\Tests\\";
+    private final String rootDir = "server\\rootDir\\";
     private Path userRootPath;
 
     private String currentFocus; // Информация о том, какой конкретно файл сейчас выделен у пользователя
@@ -32,7 +32,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<AbstractCommand>
                     ctx.writeAndFlush(new UserInfo("Account not exist"));
                     break;
                 }else {
-                    userRootPath = Paths.get("O:\\Tests\\" + authentication.getAccount());
+                    userRootPath = Paths.get("server\\rootDir\\" + authentication.getAccount());
                     currentFocus = userRootPath.toAbsolutePath().toString();
                     //Отправляем клиенту путь к корневому каталогу на сервере
                     ctx.writeAndFlush(new AuthenticationComplete(userRootPath.toString()));
@@ -60,8 +60,8 @@ public class MessageHandler extends SimpleChannelInboundHandler<AbstractCommand>
                 break;
             case DELETE_REQUEST:
                 if(Files.isDirectory(Path.of(currentFocus))){
-                System.out.println("удаление директорий в разработке");
-            }else {
+                    System.out.println("удаление директорий в разработке");
+                }else {
                     Files.delete(Path.of(currentFocus));
                 }
                 break;

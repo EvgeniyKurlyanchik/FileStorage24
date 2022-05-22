@@ -58,6 +58,7 @@ public class ExchangeController implements Initializable {
     ContextMenu leftContextMenu;
     @FXML
     ContextMenu rightContextMenu;
+    @FXML
     TreeItem<File> clientFileTreeFocus;
 
     //Серверная панель
@@ -81,7 +82,9 @@ public class ExchangeController implements Initializable {
     TextField portTextField;
     @FXML
     Button connectBut;
+    @FXML
     String serverRootPath; //корневая папка на сервере выше которой клиенту ничего не доступно.
+    @FXML
     TreeItem<File> serverFileTreeFocus; //текущий файл на сервере в котором сфокусирован пользователь
 
     //Контекстное меню
@@ -93,10 +96,10 @@ public class ExchangeController implements Initializable {
     MenuItem sendFileToServer;
 
     Socket socket;
-    int bufferSize = 1024000;
+    int bufferSize = 1000000;
 
     private String ipAddress = "localhost";
-    int port = 45002;
+    int port = 45005;
 
     //Обмен командами
     ObjectEncoderOutputStream os;
@@ -109,7 +112,7 @@ public class ExchangeController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         authPanel.setVisible(false);
-        clientFileTree.setRoot(buildFileSystemBrowser("/").getRoot());
+        clientFileTree.setRoot(buildFileSystemBrowser("FileStorage24-client/rootDir").getRoot());
         clientFileTreeFocus = clientFileTree.getRoot();
 
         //Позволяет выбирать несколько файлов
@@ -120,12 +123,9 @@ public class ExchangeController implements Initializable {
         clientFileTree.getRoot().setExpanded(true);
 
         //Настройка ивентов с мышью
-        clientFileTree.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                mouseX = mouseEvent.getX();
-                mouseY = mouseEvent.getY();
-            }
+        clientFileTree.setOnMouseMoved(mouseEvent -> {
+            mouseX = mouseEvent.getX();
+            mouseY = mouseEvent.getY();
         });
         serverFileTree.setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
@@ -139,7 +139,6 @@ public class ExchangeController implements Initializable {
         copyFileToServer.setOnAction(new EventHandler<ActionEvent>() {
             @SneakyThrows
             public void handle(ActionEvent e) {
-
                 File clientFile = clientFileTree.getSelectionModel().getSelectedItems().get(0).getValue().getAbsoluteFile();
                 try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(clientFile), bufferSize)) {
                     byte[] rd = bis.readNBytes(bufferSize);
@@ -165,21 +164,27 @@ public class ExchangeController implements Initializable {
             }
         });
 
-        clientFileTree.setOnMouseClicked(mouseEvent -> {
-            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                leftContextMenu.show(clientFileTree, Side.BOTTOM, mouseEvent.getY(), mouseEvent.getX());
-            }
-            if (mouseEvent.getButton() == MouseButton.PRIMARY &&
-                    clientFileTree.getSelectionModel().getSelectedItem() != null) {
-                clientFileTreeFocus = clientFileTree.getSelectionModel().getSelectedItem();
+        clientFileTree.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                    leftContextMenu.show(clientFileTree, Side.BOTTOM, mouseEvent.getY(), mouseEvent.getX());
+                }
+                if (mouseEvent.getButton() == MouseButton.PRIMARY &&
+                        clientFileTree.getSelectionModel().getSelectedItem() != null) {
+                    clientFileTreeFocus = clientFileTree.getSelectionModel().getSelectedItem();
+                }
             }
         });
 
-        serverFileTree.setOnMouseClicked(mouseEvent -> {
-            if (serverFileTree.getSelectionModel().getSelectedItem() == null) {
-                return;
+        serverFileTree.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if (serverFileTree.getSelectionModel().getSelectedItem() == null) {
+                    return;
+                }
+                refreshServFocused();
             }
-            refreshServFocused();
         });
     }
 
@@ -200,6 +205,7 @@ public class ExchangeController implements Initializable {
 
     }
 
+
     public void updateServFileTreeDir(String dirName) {
         Platform.runLater(() -> {
             serverFileTree.setRoot(buildFileSystemBrowser(serverRootPath).getRoot());
@@ -209,13 +215,12 @@ public class ExchangeController implements Initializable {
 
     public void updateClientFileTreeDir(String dirName) {
         Platform.runLater(() -> {
-            clientFileTree.setRoot(buildFileSystemBrowser("/").getRoot());
+            clientFileTree.setRoot(buildFileSystemBrowser("FileStorage24-client/rootDir").getRoot());
             clientFileTree.getRoot().setExpanded(true);
         });
     }
 
     synchronized public void createClientFolder() {
-
         if (createFolderDialog.isVisible()) {
             return;
         }
@@ -375,6 +380,7 @@ public class ExchangeController implements Initializable {
         //Настраиваем соединение с сервером.
         ipAddress = ipTextField.getText() == null ? "localhost" : ipTextField.getText();
 
+
         port = Integer.parseInt(portTextField.getText() == null ? Integer.toString(port) : portTextField.getText());
 
         try {
@@ -529,9 +535,9 @@ public class ExchangeController implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-            /*    while () {
-                    new CopyProgressRequest();
-                }*/
+                while (true) {
+                    //new CopyProgressRequest();
+                }
             }
         });
 
