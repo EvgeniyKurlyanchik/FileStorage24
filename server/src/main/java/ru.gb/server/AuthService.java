@@ -1,9 +1,6 @@
 package ru.gb.server;
 
 import java.sql.*;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-
 
 public class AuthService {
     //Переменная хранит подключение к базе
@@ -16,14 +13,12 @@ public class AuthService {
             //Инициализация драйвера JDBC
             Class.forName("org.sqlite.JDBC");
             //Устанавливаем соединение с базой
-            connection = DriverManager.getConnection("jdbc:sqlite:database.db");
+            connection = DriverManager.getConnection("jdbc:sqlite:server/src/main/java/sql/database1.db");
             statement = connection.createStatement();
+
             System.out.println("Connected to DB");
             createDB();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        catch (SQLException e){
+        } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
     }
@@ -44,7 +39,7 @@ public class AuthService {
     }
 
     /**
-     * Запрос возвращает null если пара аккаунт пароль не найдена и возвращает польщователя БД если найдено полное совпадание.
+     * Запрос возвращает null если пара аккаунт пароль не найдена и возвращает пользователя БД если найдено полное совпадание.
      * @return String
      */
     public static String authentication(String account, String password){
@@ -70,14 +65,14 @@ public class AuthService {
         }
     }
 
-    public static void addAccount(String account, String pass, String root) throws SQLException{
+    public static void addAccount(String account, String pass, String root_directory) throws SQLException{
         String acc = getAccount(account, pass);
         if (acc == null){
             try {
-                String sqlRequest = String.format("INSERT INTO users" +
+                String sqlRequest = String.format("INSERT INTO users " +
                         "(account, password, root_directory) " +
                         "VALUES " +
-                        "('%s', '%s', '%s');", account, pass, root);
+                        "('%s', '%s', '%s');", account, pass,root_directory);
                 PreparedStatement ps = connection.prepareStatement(sqlRequest);
                 ps.executeUpdate();
             } catch (SQLException e) {

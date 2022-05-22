@@ -31,13 +31,14 @@ public class ServerNetty {
                     @Override
                     protected void initChannel(SocketChannel channel) throws Exception {
                         channel.pipeline().addLast(
-                                new ObjectEncoder(),
+
                                 new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                                new ObjectEncoder(),
                                 new MessageHandler()
                         );
                     }
                 });
-        ChannelFuture future = bootstrap.bind(45002).sync();
+        ChannelFuture future = bootstrap.bind(45005).sync();
         log.debug("Server started...");
         future.channel().closeFuture().sync();
 
